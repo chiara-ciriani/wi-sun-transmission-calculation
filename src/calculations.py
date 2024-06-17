@@ -9,7 +9,7 @@ def calculate_ack_time():
     ack_time = (ACK_SIZE / CR) * 1000  # convert to ms
     return ack_time
 
-def calculate_transmission_time(num_hops, CCA, CCA_probability_failure, packet_size, GUARD_TIME, packet_received_probability):
+def calculate_transmission_time(num_hops, CCA, CCA_probability_failure, packet_size, GUARD_TIME, packet_received_probability, receiver_node_not_in_channel):
     packet_time = calculate_packet_time(packet_size)
     ack_time = calculate_ack_time()
     
@@ -38,16 +38,15 @@ def calculate_transmission_time(num_hops, CCA, CCA_probability_failure, packet_s
         
             # Simulate CCA
             if random.random() > CCA_probability_failure:
-                # Channel is sensed to be idle, so transmit immediately
-                total_time += packet_time + ack_time + GUARD_TIME
-                break    # The message has already been transmitted
+                # Channel is sensed to be idle
+                # Check if the receiver is on the channel
+                if random.random() > receiver_node_not_in_channel:
+                # Channel is sensed to be idle and receiver is on the channel, so transmit immediately
+                    total_time += packet_time + ack_time + GUARD_TIME
+                    break    # The message has already been transmitted
                 
             if attemps == MAX_ATTEMPS:
                 print("Max transmissions attempts reached. Transmission cancelled.")
                 return total_time, hop
 
     return total_time, num_hops
-
-# DUDAS:
-
-# - Countdown must freeze??
