@@ -1,19 +1,20 @@
-from constants import ACK_SIZE, CR, MAX_ATTEMPS, MIN_BACKOFF_EXPONENT, MAX_BACKOFF_EXPONENT
+from constants import ACK_SIZE, CR, MAX_ATTEMPS, MIN_BACKOFF_EXPONENT, MAX_BACKOFF_EXPONENT, PHY_OVERHEAD_BITS
 import random
 
 def calculate_packet_time(packet_size):
-    packet_time = (packet_size / CR) * 1000  # convert to ms
+    total_bits = packet_size * 8 + PHY_OVERHEAD_BITS  # Convert packet size to bits and add PHY overhead
+    packet_time = (total_bits / CR) * 1000  # convert to ms
     return packet_time
 
 def calculate_ack_time():
-    ack_time = (ACK_SIZE / CR) * 1000  # convert to ms
+    ack_bits = ACK_SIZE * 8 + PHY_OVERHEAD_BITS  # Convert ACK size to bits and add PHY overhead
+    ack_time = (ack_bits / CR) * 1000  # convert to ms
     return ack_time
 
 def calculate_transmission_time(route, CCA, CCA_probability_failure, packet_size, GUARD_TIME, packet_received_probability, receiver_node_not_in_channel_probability, unicast_schedule, broadcast_schedule, num_channels, unicast_dwell_interval, broadcast_dwell_interval):
     num_hops = len(route) - 1
     packet_time = calculate_packet_time(packet_size)
     ack_time = calculate_ack_time()
-    # Y EL GUARD TIME ??
     
     total_time = 0
 
@@ -75,6 +76,7 @@ def calculate_transmission_time(route, CCA, CCA_probability_failure, packet_size
                     
                 ## DUDA: si el canal de broadcast esta activo, se tiene que a hacer el backoff y todo otra vez?
                 ## o solo espera el tiempo
+                # PREGUNTAR ESTOO
                 ## if broadcast_active:
                 ##     continue  # Skip the rest and re-check the broadcast schedule
 
